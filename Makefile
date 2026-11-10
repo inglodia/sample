@@ -10,16 +10,16 @@ wait:
 	./scripts/wait-for-postgres.sh
 
 dev:
-	@echo "Stub: full dev workflow lands in a later task."
+	./scripts/dev.sh
 
 migrate:
-	@echo "Stub: run Alembic migrations (backend task)."
+	cd backend && .venv/bin/alembic upgrade head
 
 seed:
-	@echo "Stub: seed admin user (backend task)."
+	cd backend && .venv/bin/python -m app.seed
 
 backend:
-	@echo "Stub: uvicorn backend (backend task)."
+	cd backend && .venv/bin/uvicorn app.main:app --reload --port 8000
 
 frontend:
-	@echo "Stub: Vite dev server (frontend task)."
+	cd frontend && npm run dev
