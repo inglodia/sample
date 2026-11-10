@@ -7,13 +7,7 @@ from app.routers import auth, dashboard, users
 
 app = FastAPI(title="Portal API")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Session first, then CORS (last added = outermost; CORS wraps session/cookies).
 app.add_middleware(
     SessionMiddleware,
     secret_key=settings.session_secret,
@@ -21,6 +15,13 @@ app.add_middleware(
     max_age=14 * 24 * 60 * 60,
     same_site="lax",
     https_only=False,
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins_list,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])

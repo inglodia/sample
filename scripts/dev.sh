@@ -23,6 +23,28 @@ ensure_backend_venv() {
   fi
 }
 
+ensure_root_env() {
+  if [[ ! -f "${ROOT}/.env" ]]; then
+    if [[ -f "${ROOT}/.env.example" ]]; then
+      echo "Creating .env from .env.example …"
+      cp "${ROOT}/.env.example" "${ROOT}/.env"
+    else
+      echo "Error: .env not found and no .env.example to copy. Create .env before running make dev."
+      exit 1
+    fi
+  fi
+}
+
+ensure_frontend_deps() {
+  if [[ ! -d "${ROOT}/frontend/node_modules" ]]; then
+    echo "Installing frontend dependencies …"
+    (cd "${ROOT}/frontend" && npm install)
+  fi
+}
+
+ensure_root_env
+ensure_frontend_deps
+
 docker network inspect sample1-net >/dev/null 2>&1 || docker network create sample1-net
 docker compose up -d
 "${ROOT}/scripts/wait-for-postgres.sh"

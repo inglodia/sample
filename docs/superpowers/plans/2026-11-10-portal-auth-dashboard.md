@@ -19,6 +19,7 @@
 - Theme: `npx shadcn@latest add https://tweakcn.com/r/themes/catppuccin.json`
 - Docker network name: `sample1-net`
 - API under `/api`; Vite proxies `/api` → `http://127.0.0.1:8000`
+- **Config via `.env`:** commit only `*.env.example` files; never commit real `.env`. Root `.env` drives docker-compose (`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`). `backend/.env` drives FastAPI/Alembic/seed (`DATABASE_URL`, `SESSION_SECRET`, `CORS_ORIGINS`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`). `frontend/.env` drives Vite (`VITE_API_BASE`). Apps and Compose must read these properties (env_file / pydantic-settings / Vite), not hardcode secrets in source.
 
 ---
 
