@@ -1,8 +1,10 @@
+import uuid
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.deps import get_current_user, get_user_by_email, hash_password, verify_password
+from app.deps import get_user_by_email, hash_password, verify_password
 from app.db import get_db
 from app.models.user import User
 from app.schemas.auth import LoginIn, RegisterIn, UserOut
@@ -47,6 +49,14 @@ def logout(request: Request) -> dict[str, bool]:
     return {"ok": True}
 
 
-@router.get("/me", response_model=UserOut)
-def me(user: User = Depends(get_current_user)) -> User:
-    return user
+@router.get("/me", response_model=UserOut | None)
+def me(request: Request, db: Session = Depends(get_db)) -> User | None:
+    """Return the current user, or null when there is no session (200, not 401)."""
+    raw_id = request.session.get("user_id")
+    if not raw_id:
+        return None
+    try:
+        user_id = uuid.UUID(str(raw_id))
+    except ValueError:
+        return None
+    return db.get(User, user_id)

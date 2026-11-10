@@ -47,7 +47,8 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   if (!contentType.includes("application/json")) {
     return undefined as T
   }
-  return res.json() as Promise<T>
+  // Allow explicit JSON null (e.g. GET /auth/me when logged out).
+  return (await res.json()) as T
 }
 
 export type User = {

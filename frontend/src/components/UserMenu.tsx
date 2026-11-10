@@ -2,6 +2,7 @@ import { LogOutIcon } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,25 +27,38 @@ export function UserMenu() {
   }
 
   async function handleLogout() {
-    await logout()
-    navigate("/login", { replace: true })
+    try {
+      await logout()
+    } finally {
+      navigate("/login", { replace: true })
+    }
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="rounded-full outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
-        aria-label="Open account menu"
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="rounded-full"
+            aria-label="Open account menu"
+          />
+        }
       >
         <Avatar size="sm">
           <AvatarFallback>{initials(user.email)}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className="min-w-56 w-auto">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium">Account</span>
             <span className="text-xs text-muted-foreground">{user.email}</span>
+            <span className="text-xs capitalize text-muted-foreground">
+              Role: {user.role}
+            </span>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

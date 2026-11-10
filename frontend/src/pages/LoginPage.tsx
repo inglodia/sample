@@ -43,10 +43,15 @@ export function LoginPage() {
   return (
     <main className="flex min-h-svh items-center justify-center bg-background p-6">
       <Card className="w-full max-w-md">
-        <CardHeader>
+          <CardHeader>
           <CardTitle>Sign in</CardTitle>
           <CardDescription>
-            Use your portal account to access the dashboard.
+            Use your portal account to access the dashboard. Local admin:{" "}
+            <span className="font-medium text-foreground">
+              admin@example.com
+            </span>{" "}
+            /{" "}
+            <span className="font-medium text-foreground">Test@1234</span>
           </CardDescription>
         </CardHeader>
         <form onSubmit={(e) => void onSubmit(e)}>

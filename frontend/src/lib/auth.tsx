@@ -27,15 +27,9 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 async function fetchMe(): Promise<User | null> {
-  try {
-    return await api<User>("/auth/me")
-  } catch (err) {
-    const status = (err as { status?: number }).status
-    if (status === 401) {
-      return null
-    }
-    throw err
-  }
+  // /api/auth/me returns 200 + null when logged out (no 401 noise).
+  const me = await api<User | null>("/auth/me")
+  return me ?? null
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -54,6 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const me = await fetchMe()
         if (!cancelled) {
           setUser(me)
+        }
+      } catch {
+        if (!cancelled) {
+          setUser(null)
         }
       } finally {
         if (!cancelled) {
@@ -90,8 +88,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   const logout = useCallback(async () => {
-    await api("/auth/logout", { method: "POST" })
-    setUser(null)
+    try {
+      await api("/auth/logout", { method: "POST" })
+    } finally {
+      setUser(null)
+    }
   }, [])
 
   const value = useMemo<AuthContextValue>(

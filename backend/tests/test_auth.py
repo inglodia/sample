@@ -27,7 +27,8 @@ def test_register_login_me_logout(client: TestClient) -> None:
     assert r.status_code == 200
     assert r.json() == {"ok": True}
     r = client.get("/api/auth/me")
-    assert r.status_code == 401
+    assert r.status_code == 200
+    assert r.json() is None
 
 
 def test_register_duplicate_email_returns_409(client: TestClient) -> None:
