@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
@@ -33,6 +34,7 @@ def patch_user_role(
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     user.role = body.role
+    user.updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(user)
     return user

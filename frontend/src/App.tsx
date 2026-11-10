@@ -1,27 +1,55 @@
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom"
+
+import { AppShell } from "@/components/AppShell"
+import { Skeleton } from "@/components/ui/skeleton"
+import { AuthProvider, useAuth } from "@/lib/auth"
+import { DashboardPage } from "@/pages/DashboardPage"
+import { LoginPage } from "@/pages/LoginPage"
+import { RegisterPage } from "@/pages/RegisterPage"
+import { UsersPage } from "@/pages/UsersPage"
+
+function RequireAuth() {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <main className="flex min-h-svh items-center justify-center p-6">
+        <Skeleton className="h-10 w-48" />
+      </main>
+    )
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  return <Outlet />
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route element={<RequireAuth />}>
+        <Route element={<AppShell />}>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/users" element={<UsersPage />} />
+        </Route>
+      </Route>
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
+  )
+}
 
 function App() {
   return (
-    <main className="flex min-h-svh flex-col items-center justify-center bg-background p-6 text-foreground">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Portal</CardTitle>
-          <CardDescription>
-            Vite + shadcn with Catppuccin theme
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex justify-end">
-          <Button type="button">Continue</Button>
-        </CardContent>
-      </Card>
-    </main>
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
 

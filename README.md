@@ -1,33 +1,62 @@
 # Portal (auth + dashboard)
 
-Vite/React frontend and FastAPI backend monorepo. Task 1 provides Postgres via Docker Compose.
+Vite/React frontend and FastAPI backend monorepo with Postgres via Docker Compose.
 
 ## Local setup
 
-1. Copy environment defaults:
+1. Copy environment files (keep ports in sync — see note below):
 
    ```bash
    cp .env.example .env
+   cp backend/.env.example backend/.env
+   cp frontend/.env.example frontend/.env
    ```
 
-2. Start Postgres and wait for readiness:
+2. Backend Python venv and dependencies:
 
    ```bash
-   make up
-   make wait
+   python3 -m venv backend/.venv
+   source backend/.venv/bin/activate
+   pip install -r backend/requirements.txt
    ```
 
-   Or: `docker compose up -d` then `./scripts/wait-for-postgres.sh`.
+   `make dev` creates `backend/.venv` automatically if it is missing.
 
-Postgres listens on `localhost:${POSTGRES_PORT:-5432}` with credentials from `.env` (defaults: user/db/password `portal`).
+3. Frontend dependencies:
 
-## Makefile (stubs)
+   ```bash
+   cd frontend && npm install
+   ```
 
-| Target    | Status                          |
-|-----------|---------------------------------|
-| `make up` | Start Postgres                  |
-| `make down` | Stop Compose services         |
-| `make wait` | Block until Postgres is ready |
-| `make dev` | Full stack — later task        |
+4. Start the full stack:
 
-Network: `sample1-net`.
+   ```bash
+   make dev
+   ```
+
+   - API docs: http://127.0.0.1:8000/docs  
+   - UI: http://localhost:5173  
+   - Default admin (after seed): **admin@example.com** / **Test@1234**
+
+### Postgres port vs `DATABASE_URL`
+
+Root `.env` sets `POSTGRES_PORT` for Docker Compose (host port mapped to the container). `backend/.env` `DATABASE_URL` must use the **same host port**, e.g. if `POSTGRES_PORT=5434` in the repo `.env`, set:
+
+`DATABASE_URL=postgresql+psycopg://portal:portal@127.0.0.1:5434/portal`
+
+Compose reads the root `.env`; the API reads `backend/.env`.
+
+## Makefile
+
+| Target        | Description                                      |
+|---------------|--------------------------------------------------|
+| `make dev`    | Network, Postgres, migrate, seed, API + Vite     |
+| `make up`     | `docker compose up -d` (Postgres only)           |
+| `make down`   | `docker compose down`                            |
+| `make wait`   | Block until Postgres is ready                    |
+| `make migrate`| Alembic `upgrade head`                           |
+| `make seed`   | Insert default admin if missing                  |
+| `make backend`| Uvicorn on port 8000 (venv required)             |
+| `make frontend` | Vite dev server                                |
+
+Network: `sample1-net`. Container: `sample1-postgres`.
