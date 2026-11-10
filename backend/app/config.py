@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://portal:portal@127.0.0.1:5432/portal"
     session_secret: str = "dev-secret-change-me"
     cors_origins: str = "http://localhost:5173"
+    admin_email: str = "admin@example.com"
+    admin_password: str = "Test@1234"
 
     @property
     def cors_origins_list(self) -> list[str]:
