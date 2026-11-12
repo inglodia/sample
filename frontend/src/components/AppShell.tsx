@@ -1,4 +1,8 @@
-import { LayoutDashboardIcon, UsersIcon } from "lucide-react"
+import {
+  LayoutDashboardIcon,
+  MessageSquareIcon,
+  UsersIcon,
+} from "lucide-react"
 import { Link, Outlet, useLocation } from "react-router-dom"
 
 import { UserMenu } from "@/components/UserMenu"
@@ -64,6 +68,16 @@ export function AppShell() {
                   >
                     <LayoutDashboardIcon />
                     <span>Dashboard</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={location.pathname.startsWith("/chat")}
+                    render={<Link to="/chat" />}
+                    tooltip="Chat"
+                  >
+                    <MessageSquareIcon />
+                    <span>Chat</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 {isAdmin ? (

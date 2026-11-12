@@ -70,3 +70,32 @@ export type DashboardStats = {
 export type UserListResponse = {
   items: User[]
 }
+
+export type ChatThread = {
+  id: string
+  title: string
+  created_at: string
+  updated_at: string
+}
+
+export type ChatThreadListResponse = {
+  items: ChatThread[]
+}
+
+export type ChatMessage = {
+  id: string
+  thread_id: string
+  role: "user" | "assistant" | string
+  content: string
+  thinking?: string | null
+  created_at: string
+}
+
+export type ChatMessageListResponse = {
+  items: ChatMessage[]
+}
+
+export type ChatTurnResponse = {
+  user_message: ChatMessage
+  assistant_message: ChatMessage
+}

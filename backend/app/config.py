@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     admin_email: str = "admin@example.com"
     admin_password: str = "Test@1234"
+    openai_api_key: str = ""
+    openai_model: str = "gpt-4o-mini"
 
     @property
     def cors_origins_list(self) -> list[str]:
